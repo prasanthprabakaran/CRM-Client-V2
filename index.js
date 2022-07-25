@@ -1,5 +1,4 @@
 import express from "express";
-// import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
 import cors from 'cors';
 import connectDB from './config/db.js'
@@ -23,7 +22,6 @@ app.get('/',(req,res,next) => {
 // Connecting Routes
 app.use('/api/V2/auth', listRouter);
 app.use('/api/V2/private', privateRouter);
-
 // Error handler Middleware
 app.use(errorHandler);
 

@@ -1,5 +1,7 @@
 import User from '../models/User.js'
 import ErrorResponse from '../utils/errorResponse.js';
+import sendEmail from '../utils/sendEmail.js'
+import crypto from 'crypto';
 
 // Registerd user
 export async function register(req,res,next){
@@ -64,7 +66,7 @@ export async function forgotpassword(req,res,next){
     await user.save();
 
     // Create reset url to email to provide email
-    const resetUrl = `https://crm-app-prasanth.netlify.app/resetpassword/${resetToken}`;
+    const resetUrl = `https://crm-app-prasanth/resetpassword/${resetToken}`;
 
     // HTML Message 
     const message =`

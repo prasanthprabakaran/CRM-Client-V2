@@ -1,0 +1,41 @@
+20221224	16:10:47	e8332a86-2c0f-4dfa-bb41-1ae8be094331	MongoServerError: user is not allowed to do action [find] on [test.users]	GET	/user	undefined
+20221224	16:11:30	95df7598-4a3c-4875-a511-cd7339f6a56d	MongoServerError: user is not allowed to do action [find] on [test.users]	GET	/users	undefined
+20221224	16:14:43	551c42f1-461c-4c5c-97b2-44e4082f9e2a	MongoServerError: user is not allowed to do action [find] on [test.users]	GET	/users	undefined
+20221226	12:08:58	ea6eb207-0786-4e52-98c6-4cc6b8106822	Error: Not allowed by CORS	GET	/tasks	http://localhost:3000
+20221226	12:09:13	136c40a8-f211-4ea1-a63c-d7b78a57e6e4	Error: Not allowed by CORS	GET	/tasks	http://localhost:3000
+20221226	12:09:28	6ffd694a-0fb8-4634-872f-7390a390fa31	Error: Not allowed by CORS	GET	/tasks	http://localhost:3000
+20221226	12:09:33	a113b673-dd41-44f6-8617-2f6d519556b3	Error: Not allowed by CORS	GET	/tasks	http://localhost:3000
+20221226	12:09:42	c73ef0c3-943c-4185-9c39-c8a8514c53be	Error: Not allowed by CORS	GET	/users	http://localhost:3000
+20221226	12:10:02	1b1812d3-4aa8-479f-99ca-33d3e0d946d9	Error: Not allowed by CORS	GET	/tasks	http://localhost:3000
+20221226	12:15:50	c1e9588f-66da-43e8-986b-3e1d45f45b57	Error: Not allowed by CORS	GET	/tasks	http://localhost:3000
+20221226	12:15:54	4bc39c15-27ca-46cc-9e72-c8d308cfa248	Error: Not allowed by CORS	GET	/tasks	http://localhost:3000
+20221226	12:16:04	684d6ca9-0a71-4bfe-948a-80eb2fc760f3	Error: Not allowed by CORS	GET	/users	http://localhost:3000
+20221226	12:16:44	0df5e28f-ced4-4463-a794-60a1bca05dc6	Error: Not allowed by CORS	GET	/users	http://localhost:3000
+20221226	12:17:45	d2ce8257-42aa-4ffd-aded-76c55f7bc79f	Error: Not allowed by CORS	GET	/users	http://localhost:3000
+20221226	12:18:46	c8245934-1450-49c1-9d09-0ff12c689bfb	Error: Not allowed by CORS	GET	/users	http://localhost:3000
+20221226	12:19:47	d8b349ee-c0ee-4b79-b115-7b11fd4e7f8b	Error: Not allowed by CORS	GET	/users	http://localhost:3000
+20221226	12:20:48	a3fccfaa-ef67-4813-8dd8-4cd184ec8407	Error: Not allowed by CORS	GET	/users	http://localhost:3000
+20221226	12:21:49	de97b783-5908-40a9-8e9d-1426d2765dcf	Error: Not allowed by CORS	GET	/users	http://localhost:3000
+20221226	12:22:23	b2d57da5-8dcf-441d-8a56-9d28bbba6f30	Error: Not allowed by CORS	GET	/users	http://localhost:3000
+20221226	12:22:31	1f26a7e0-73c8-4233-af14-c5f30fa288d8	Error: Not allowed by CORS	GET	/users	http://localhost:3000
+20221226	12:22:44	06d6035c-d5df-4efe-a190-e446bef55096	Error: Not allowed by CORS	GET	/tasks	http://localhost:3000
+20221226	12:23:03	2d718caa-7a40-4003-8dd3-1569c49b0330	Error: Not allowed by CORS	GET	/users	http://localhost:3000
+20221226	12:23:28	ca114795-fec8-4c2a-bf51-185cd71c0427	Error: Not allowed by CORS	GET	/users	http://localhost:3000
+20221226	12:23:32	92ee92e0-cabb-4385-a024-c7b32ddfb105	Error: Not allowed by CORS	GET	/users	http://localhost:3000
+20221226	12:23:41	e86e5004-b218-47b7-9b5e-8ddd79b430cd	Error: Not allowed by CORS	GET	/users	http://localhost:3000
+20221227	12:37:31	4ab43fac-589f-4275-bdf4-40dd3c2ea271	ReferenceError: __dirname is not defined	GET	/	undefined
+20221227	16:57:09	7610c91c-e2aa-499f-969e-0d28af2e8ec9	Error: Not allowed by CORS	GET	/tasks	http://localhost:3000
+20221227	16:57:24	6e507ea5-6612-42e6-918f-8cd74e04a1ad	Error: Not allowed by CORS	GET	/tasks	http://localhost:3000
+20221227	16:57:39	cfafa6be-47d7-4720-91b7-6d4a1b70c775	Error: Not allowed by CORS	GET	/tasks	http://localhost:3000
+20221227	16:57:54	26c2cc98-1e3b-4696-b9b3-25b2fe67db12	Error: Not allowed by CORS	GET	/tasks	http://localhost:3000
+20221227	16:58:09	cbeb86fa-66fa-4331-8c5d-cd41b191b082	Error: Not allowed by CORS	GET	/tasks	http://localhost:3000
+20221227	16:58:10	b509ffc8-bedf-4250-9dad-7176bddabd03	Error: Not allowed by CORS	GET	/tasks	http://localhost:3000
+20221227	16:58:14	01cde40b-797d-47e1-a1ce-74fafbdd0d99	Error: Not allowed by CORS	GET	/users	http://localhost:3000
+20221227	16:58:35	bbc56f45-a7c2-40bb-a15e-a154d349bf95	Error: Not allowed by CORS	GET	/users	http://localhost:3000
+20221227	16:58:44	64c80e84-292e-42b9-95fc-3f32030d9cbd	Error: Not allowed by CORS	POST	/auth/logout	http://localhost:3000
+20221228	18:32:25	8268b32e-15c4-48b9-95e6-9f92ba68a71f	Error: Not allowed by CORS	OPTIONS	/auth	http://localhost:3000
+20221228	18:39:26	f1a1ddf0-b064-4cc2-a393-f5b4868d44c2	Error: Not allowed by CORS	OPTIONS	/auth	http://localhost:3000
+20221228	18:39:58	d5f40230-a0f7-423a-9f1b-c0dedecc561b	Error: Not allowed by CORS	OPTIONS	/auth	http://localhost:3000
+20221228	18:42:46	80c393bb-9a24-4056-9074-51f0b49b5281	Error: Not allowed by CORS	OPTIONS	/auth	http://localhost:3000
+20221228	18:48:42	8dca9a70-70a5-4999-bdc4-fece75876e4e	Error: Not allowed by CORS	OPTIONS	/auth	http://localhost:3000
+20221228	18:50:59	7c1e454a-896e-4e61-b096-9ac1842d7952	Error: Not allowed by CORS	POST	/auth	http://localhost:3000

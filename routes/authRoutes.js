@@ -9,4 +9,8 @@ router.route('/refresh').get(authController.refresh)
 
 router.route('/logout').post(authController.logout)
 
+router.route('/forgetpassword').post(authController.forgetpassword)
+
+router.route('/resetpassword/:resetToken').put(authController.resetpassword)
+
 export const authRouter = router;

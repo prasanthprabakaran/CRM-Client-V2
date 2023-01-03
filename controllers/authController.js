@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import sendEmail from "../utils/sendEmail.js";
 
 // @desc Login
 // @route POST /auth
@@ -95,6 +96,95 @@ export const logout = (req, res) => {
     res.json({ message: 'Cookie cleared' })
 }
 
-const authController = { login, refresh, logout }
+export const forgetpassword = async(res,req) => {
+    const { email } =req.body;
+    
+    const user = await User.findOne({email});
+
+    if(!user) {
+        return res.status(404).send({ 
+            message: "No email could be send",
+            success: false,
+        });
+    }
+
+    let resetToken = await user.getResetPasswordToken();
+
+    await user.save();
+
+    const resetUrl = `${process.env.ORIGIN}/resetpassword/${resetToken}`;
+
+    const message = `
+    <h1>You have requested a password reset</h1>
+    <p>You're almost there!</p><br><p>Click the link below to verify your email</p>
+    <a href=${resetUrl} clicktracking=off> Verify your email</a>
+    `;
+    try {
+        await sendEmail({
+            to: user.email,
+            subject: "Password Reset Request",
+            text: message,
+        });
+        res.status(200).json({ success: true, data: "Email Sent"});
+    } catch (error) {
+        console.log(error);
+
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpire = undefined;
+
+        await user.save();
+
+        return res.status(500).send({
+            message: "Email could not be sent",
+            success: false
+        })
+    }
+    
+}
+
+export const resetpassword = async (req,res) => {
+    
+    const resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(req.params.resetToken)
+    .digest("hex");
+
+    const user = await User.findOne({
+        resetPasswordToken,
+        resetPasswordExpire: {$gt: Date.now()},
+    });
+
+    if (!user) {
+        return res.status(400).send({
+            message: "Invalid Token",
+            success: false,
+        })
+    }
+
+    user.password = req.body.password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+
+    await user.save(); 
+
+    const accessToken = jwt.sign(
+        {
+            "UserInfo": {
+                "username": user.username,
+                "roles": user.roles
+            }
+        },
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: '15m' }
+    )
+    res.json({ 
+        accessToken,
+        success: true,
+        data: "Password Updated Successfully"
+    })
+
+}
+
+const authController = { login, refresh, logout, forgetpassword, resetpassword }
 
 export default authController

@@ -25,18 +25,18 @@ export const getAllUsers = async (req,res) => {
 // @access Private
 
 export const createNewUser = async (req,res) => {
-    const { username,password,roles } =req.body;
+    const { username,firstname,lastname,email,password,roles } =req.body;
 
     //Confirm data
-    if(!username || !password) {
+    if(!username || !password || !email || !firstname ) {
         return res.status(400).json({ message: 'All fields are required'})
     }
 
     // Check for duplicate
-    const duplicate = await User.findOne({username}).collation({ locale: 'en', strength: 2 }).lean().exec()
+    const duplicate = await User.findOne({email}).lean().exec()
 
     if(duplicate) {
-        return res.status(409).json({message: 'Duplicate username'})
+        return res.status(409).json({message: 'Duplicate user'})
     }
 
     // Hash password
@@ -45,8 +45,8 @@ export const createNewUser = async (req,res) => {
     const hashedPwd = await bcrypt.hash(password, salt)
 
     const userObject = (!Array.isArray(roles) || !roles.length)
-    ? { username, "password": hashedPwd }
-    : { username, "password": hashedPwd, roles }
+    ? { username, firstname, lastname, email, "password": hashedPwd }
+    : { username, firstname, lastname, email, "password": hashedPwd, roles }
 
     // Create and store new user
     const user = await User.create(userObject)

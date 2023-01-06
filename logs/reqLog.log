@@ -991,3 +991,8 @@
 20221228	19:14:53	bc1e8709-70b5-49db-a212-5d9f27ff9519	undefined	/tasks	http://localhost:3000
 20221228	19:14:53	eab0ad1f-cf30-4698-8b91-17951f0c7448	undefined	/tasks	http://localhost:3000
 20221228	19:22:08	7c5b1b8b-10ee-4cfd-8638-7db955bdc517	undefined	/auth/refresh	http://localhost:3000
+20230106	23:47:37	aec54442-7ea5-4af7-8dd0-e500faf0542d	undefined	/auth/forgetpassword	undefined
+20230107	00:00:12	2345d11f-735d-4905-bc46-88367110afd5	undefined	/auth/forgetpassword	undefined
+20230107	00:04:20	82732b53-0349-49e1-8b04-d35c4dad2ac4	undefined	/auth/forgetpassword	undefined
+20230107	00:05:18	e5aa49b7-f657-4697-b453-205e8ef6d06e	undefined	/auth/forgetpassword	undefined
+20230107	00:06:06	84fd24d3-5bfd-462a-8385-8991011c3f44	undefined	/auth/forgetpassword	undefined

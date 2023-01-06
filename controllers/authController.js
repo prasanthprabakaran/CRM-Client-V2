@@ -111,20 +111,7 @@ export const forgetpassword = async (req,res) => {
         });
     }
 
-    let resetToken = () => {
-        const rstToken = crypto.randomBytes(20).toString("hex");
-    
-        //Hash token (private key) & save to database
-        user.resetPasswordToken = crypto
-        .createHash("sha256")
-        .update(rstToken)
-        .digest("hex");
-    
-        //set token expire data
-        user.resetPasswordExpire = Date.now() + 10 * (60 * 1000); // 10 mins
-    
-        return rstToken;
-    }
+    let resetToken = await user.getResetPasswordToken();
 
     await user.save();
 

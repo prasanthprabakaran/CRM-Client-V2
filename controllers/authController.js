@@ -98,11 +98,11 @@ export const logout = (req, res) => {
     res.json({ message: 'Cookie cleared' })
 }
 
-export const forgetpassword = (req,res) => {
+export const forgetpassword = async (req,res) => {
     
     const {email} =req.body;
 
-    const user = User.findOne({email: email});
+    const user = await User.findOne({email: email});
 
     if(!user) {
         return res.status(404).send({ 
@@ -117,7 +117,7 @@ export const forgetpassword = (req,res) => {
         //Hash token (private key) & save to database
         user.resetPasswordToken = crypto
         .createHash("sha256")
-        .update(resetToken)
+        .update(rstToken)
         .digest("hex");
     
         //set token expire data
@@ -126,7 +126,7 @@ export const forgetpassword = (req,res) => {
         return rstToken;
     }
 
-    user.save();
+    await user.save();
 
     const resetUrl = `${process.env.ORIGIN}/resetpassword/${resetToken}`;
 
@@ -136,7 +136,7 @@ export const forgetpassword = (req,res) => {
     <a href=${resetUrl} clicktracking=off> Verify your email</a>
     `;
     try{
-        sendEmail({
+        await sendEmail({
             to: user.email,
             subject: "Password Reset Request",
             text: message,
@@ -148,7 +148,7 @@ export const forgetpassword = (req,res) => {
         user.resetPasswordToken = undefined;
         user.resetPasswordExpire = undefined;
 
-        user.save();
+        await user.save();
 
         return res.status(500).send({
             message: "Email could not be sent",

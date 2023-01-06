@@ -99,7 +99,7 @@ export const logout = (req, res) => {
 export const forgetpassword = async(res,req) => {
     const { email } =req.body;
     
-    const user = await User.findOne({email});
+    const user = await User.findOne({email: email});
 
     if(!user) {
         return res.status(404).send({ 

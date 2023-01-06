@@ -102,105 +102,104 @@ export const forgetpassword = (req,res) => {
     
     const {email} =req.body;
 
-    const transporter = nodemailer.createTransport({
-        service: process.env.EMAIL_SERVICE,
-        auth: {
-          user: process.env.EMAIL_USERNAME,
-          pass: process.env.EMAIL_PASSWORD,
-        },
-        tls: {
-          rejectUnauthorized: false,
-        },
-      });
-    
-      crypto.randomBytes(32, (err, buffer) => {
-        if (err) {
-          console.log(err);
-        }
-        const token = buffer.toString('hex');
-        User.findOne({ email: email }).then((user) => {
-          if (!user) {
-            return res
-              .status(422)
-              .json({ error: 'User does not exist in our database' });
-          }
-          user.resetPasswordToken = token;
-          user.resetPasswordExpire = Date.now() + 3600000;
-          user
-            .save()
-            .then((result) => {
-              transporter.sendMail({
-                to: user.email,
-                from: process.env.EMAIL_FROM,
-                subject: 'Password reset request',
-                html: `
-                        <p>You requested for password reset from Arc Invoicing application</p>
-                        <h5>Please click this <a href="${process.env.ORIGIN}/reset/${token}">link</a> to reset your password</h5>
-                        <p>Link not clickable?, copy and paste the following url in your address bar.</p>
-                        <p>${process.env.ORIGIN}/reset/${token}</p>
-                        <P>If this was a mistake, just ignore this email and nothing will happen.</P>
-                        `,
-              });
-              res.json({ message: 'check your email' });
-            })
-            .catch((err) => console.log(err));
+    const user = User.findOne({email: email});
+
+    if(!user) {
+        return res.status(404).send({ 
+            message: "No email could be send",
+            success: false,
         });
-      });
-    
-    // const user = User.findOne({email: email});
+    }
 
-    // if(!user) {
-    //     return res.status(404).send({ 
-    //         message: "No email could be send",
-    //         success: false,
+    let resetToken = () => {
+        const rstToken = crypto.randomBytes(20).toString("hex");
+    
+        //Hash token (private key) & save to database
+        user.resetPasswordToken = crypto
+        .createHash("sha256")
+        .update(resetToken)
+        .digest("hex");
+    
+        //set token expire data
+        user.resetPasswordExpire = Date.now() + 10 * (60 * 1000); // 10 mins
+    
+        return rstToken;
+    }
+
+    user.save();
+
+    const resetUrl = `${process.env.ORIGIN}/resetpassword/${resetToken}`;
+
+    const message = `
+    <h1>You have requested a password reset</h1>
+    <p>You're almost there!</p><br><p>Click the link below to verify your email</p>
+    <a href=${resetUrl} clicktracking=off> Verify your email</a>
+    `;
+    try{
+        sendEmail({
+            to: user.email,
+            subject: "Password Reset Request",
+            text: message,
+        });
+        res.status(200).json({ success: true, data: "Email Sent"});
+    } catch (error) {
+        console.log(error);
+
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpire = undefined;
+
+        user.save();
+
+        return res.status(500).send({
+            message: "Email could not be sent",
+            success: false
+        })
+    }
+    
+    // const transporter = nodemailer.createTransport({
+    //     service: process.env.EMAIL_SERVICE,
+    //     auth: {
+    //       user: process.env.EMAIL_USERNAME,
+    //       pass: process.env.EMAIL_PASSWORD,
+    //     },
+    //     tls: {
+    //       rejectUnauthorized: false,
+    //     },
+    //   });
+    
+    //   crypto.randomBytes(32, (err, buffer) => {
+    //     if (err) {
+    //       console.log(err);
+    //     }
+    //     const token = buffer.toString('hex');
+    //     User.findOne({ email: email }).then((user) => {
+    //       if (!user) {
+    //         return res
+    //           .status(422)
+    //           .json({ error: 'User does not exist in our database' });
+    //       }
+    //       user.resetPasswordToken = token;
+    //       user.resetPasswordExpire = Date.now() + 3600000;
+    //       user
+    //         .save()
+    //         .then((result) => {
+    //           transporter.sendMail({
+    //             to: user.email,
+    //             from: process.env.EMAIL_FROM,
+    //             subject: 'Password reset request',
+    //             html: `
+    //                     <p>You requested for password reset from Arc Invoicing application</p>
+    //                     <h5>Please click this <a href="${process.env.ORIGIN}/reset/${token}">link</a> to reset your password</h5>
+    //                     <p>Link not clickable?, copy and paste the following url in your address bar.</p>
+    //                     <p>${process.env.ORIGIN}/reset/${token}</p>
+    //                     <P>If this was a mistake, just ignore this email and nothing will happen.</P>
+    //                     `,
+    //           });
+    //           res.json({ message: 'check your email' });
+    //         })
+    //         .catch((err) => console.log(err));
     //     });
-    // }
-
-    // let resetToken = () => {
-    //     const rstToken = crypto.randomBytes(20).toString("hex");
-    
-    //     //Hash token (private key) & save to database
-    //     user.resetPasswordToken = crypto
-    //     .createHash("sha256")
-    //     .update(resetToken)
-    //     .digest("hex");
-    
-    //     //set token expire data
-    //     user.resetPasswordExpire = Date.now() + 10 * (60 * 1000); // 10 mins
-    
-    //     return rstToken;
-    // }
-
-    // user.save();
-
-    // const resetUrl = `${process.env.ORIGIN}/resetpassword/${resetToken}`;
-
-    // const message = `
-    // <h1>You have requested a password reset</h1>
-    // <p>You're almost there!</p><br><p>Click the link below to verify your email</p>
-    // <a href=${resetUrl} clicktracking=off> Verify your email</a>
-    // `;
-    // try{
-    //     sendEmail({
-    //         to: user.email,
-    //         subject: "Password Reset Request",
-    //         text: message,
-    //     });
-    //     res.status(200).json({ success: true, data: "Email Sent"});
-    // } catch (error) {
-    //     console.log(error);
-
-    //     user.resetPasswordToken = undefined;
-    //     user.resetPasswordExpire = undefined;
-
-    //     user.save();
-
-    //     return res.status(500).send({
-    //         message: "Email could not be sent",
-    //         success: false
-    //     })
-    // }
-    
+    //   });
 }
 
 export const resetpassword = async (req,res) => {

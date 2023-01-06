@@ -96,10 +96,10 @@ export const logout = (req, res) => {
     res.json({ message: 'Cookie cleared' })
 }
 
-export const forgetpassword = async(res,req) => {
+export const forgetpassword = (res,req) => {
     const { email } =req.body;
     
-    const user = await User.findOne({email: email});
+    const user = User.findOne({email: email});
 
     if(!user) {
         return res.status(404).send({ 
@@ -108,9 +108,9 @@ export const forgetpassword = async(res,req) => {
         });
     }
 
-    let resetToken = await user.getResetPasswordToken();
+    let resetToken = user.getResetPasswordToken();
 
-    await user.save();
+    user.save();
 
     const resetUrl = `${process.env.ORIGIN}/resetpassword/${resetToken}`;
 
@@ -120,7 +120,7 @@ export const forgetpassword = async(res,req) => {
     <a href=${resetUrl} clicktracking=off> Verify your email</a>
     `;
     try {
-        await sendEmail({
+        sendEmail({
             to: user.email,
             subject: "Password Reset Request",
             text: message,
@@ -132,7 +132,7 @@ export const forgetpassword = async(res,req) => {
         user.resetPasswordToken = undefined;
         user.resetPasswordExpire = undefined;
 
-        await user.save();
+        user.save();
 
         return res.status(500).send({
             message: "Email could not be sent",

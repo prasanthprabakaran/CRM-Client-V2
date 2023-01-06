@@ -97,7 +97,7 @@ export const logout = (req, res) => {
 }
 
 export const forgetpassword = (res,req) => {
-    const { email } =req.body;
+    const email = req.body;
     
     const user = User.findOne({email: email});
 

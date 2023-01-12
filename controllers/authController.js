@@ -143,53 +143,17 @@ export const forgetpassword = async (req,res) => {
         })
     }
     
-    // const transporter = nodemailer.createTransport({
-    //     service: process.env.EMAIL_SERVICE,
-    //     auth: {
-    //       user: process.env.EMAIL_USERNAME,
-    //       pass: process.env.EMAIL_PASSWORD,
-    //     },
-    //     tls: {
-    //       rejectUnauthorized: false,
-    //     },
-    //   });
-    
-    //   crypto.randomBytes(32, (err, buffer) => {
-    //     if (err) {
-    //       console.log(err);
-    //     }
-    //     const token = buffer.toString('hex');
-    //     User.findOne({ email: email }).then((user) => {
-    //       if (!user) {
-    //         return res
-    //           .status(422)
-    //           .json({ error: 'User does not exist in our database' });
-    //       }
-    //       user.resetPasswordToken = token;
-    //       user.resetPasswordExpire = Date.now() + 3600000;
-    //       user
-    //         .save()
-    //         .then((result) => {
-    //           transporter.sendMail({
-    //             to: user.email,
-    //             from: process.env.EMAIL_FROM,
-    //             subject: 'Password reset request',
-    //             html: `
-    //                     <p>You requested for password reset from Arc Invoicing application</p>
-    //                     <h5>Please click this <a href="${process.env.ORIGIN}/reset/${token}">link</a> to reset your password</h5>
-    //                     <p>Link not clickable?, copy and paste the following url in your address bar.</p>
-    //                     <p>${process.env.ORIGIN}/reset/${token}</p>
-    //                     <P>If this was a mistake, just ignore this email and nothing will happen.</P>
-    //                     `,
-    //           });
-    //           res.json({ message: 'check your email' });
-    //         })
-    //         .catch((err) => console.log(err));
-    //     });
-    //   });
 }
 
 export const resetpassword = async (req,res) => {
+    const { password, confirmPassword } =req.body
+
+    if (password !== confirmPassword) {
+        return res.status(400).send({
+            message: 'Password and Confirm Password should be exactly the same',
+            success: false,
+        })
+    }
     
     const resetPasswordToken = crypto
     .createHash("sha256")

@@ -2,17 +2,17 @@ import { createTransport } from "nodemailer";
 
 const sendEmail = (options) =>{
     const transporter = createTransport({
-        host: process.env.EMAIL_SERVICE,
+        host:"smtp.gmail.com",
         port:465,
-        secure: true, // SSL/TLS
+        secure:true,
         auth: {
-            user: process.env.EMAIL_USERNAME,
-            pass: process.env.EMAIL_PASSWORD,
-        },
+            user:process.env.EMAIL_USERNAME,
+            pass:process.env.EMAIL_PASSWORD,
+        }, 
     });
 
     const mailOptions = {
-        from: process.env.EMAIL_FROM,
+        from: process.env.EMAIL_USERNAME,
         to: options.to,
         subject: options.subject,
         html: options.text,

@@ -146,14 +146,14 @@ export const forgetpassword = async (req,res) => {
 }
 
 export const resetpassword = async (req,res) => {
-    const { password, confirmPassword } =req.body
+    // const { password, confirmPassword } =req.body
 
-    if (password !== confirmPassword) {
-        return res.status(400).send({
-            message: 'Password and Confirm Password should be exactly the same',
-            success: false,
-        })
-    }
+    // if (password !== confirmPassword) {
+    //     return res.status(400).send({
+    //         message: 'Password and Confirm Password should be exactly the same',
+    //         success: false,
+    //     })
+    // }
     
     const resetPasswordToken = crypto
     .createHash("sha256")

@@ -97,7 +97,7 @@ export const updateUser = async (req,res) => {
 
     const updateUser = await user.save()
 
-    res.join({ message: `${updateUser.username} updated`})
+    res.json({ message: `${updateUser.username} updated`})
 
 }
 

@@ -138,3 +138,67 @@ This server is deployed on **Render** (free tier).
 ## License
 
 MIT
+
+---
+
+## Docker
+
+Run the full stack locally with Docker Compose (app + MongoDB):
+
+```bash
+docker-compose up --build
+```
+
+Stop and remove containers:
+
+```bash
+docker-compose down
+```
+
+The app will be available at `http://localhost:3002`.
+
+> MongoDB data is persisted in a named volume `mongo_data` so data survives container restarts.
+
+---
+
+## Kubernetes
+
+Manifests are in the `k8s/` folder. Tested locally with Docker Desktop Kubernetes.
+
+### Deploy
+
+```bash
+# Build the image first
+docker build -t crm-app:latest .
+
+# Apply manifests in order
+kubectl apply -f k8s/configmap.yaml
+kubectl apply -f k8s/secret.yaml
+kubectl apply -f k8s/deployment.yaml
+kubectl apply -f k8s/service.yaml
+kubectl apply -f k8s/ingress.yaml
+```
+
+### Verify
+
+```bash
+kubectl get all
+```
+
+### Tear down
+
+```bash
+kubectl delete -f k8s/
+```
+
+### What each manifest does
+
+| File | Purpose |
+|---|---|
+| `configmap.yaml` | Non-sensitive environment variables (PORT, ORIGIN) |
+| `secret.yaml` | Sensitive values (MongoDB URL, JWT secrets) — not committed to git |
+| `deployment.yaml` | Runs 2 replicas with liveness and readiness probes |
+| `service.yaml` | Internal ClusterIP load balancer across pods |
+| `ingress.yaml` | External traffic routing via nginx ingress controller |
+
+> `k8s/secret.yaml` is in `.gitignore` — never commit real secrets to version control.

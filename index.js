@@ -40,7 +40,7 @@ app.use("/auth",authRouter);
 app.use("/users",userRouter);
 app.use('/tasks',tasksRouter);
 
-app.all('*',(req,res)=>{
+app.all('*splat',(req,res)=>{
     res.status(404)
     if(req.accepts('html')){
         res.sendFile(path.join(__dirname,'views','404.html'))

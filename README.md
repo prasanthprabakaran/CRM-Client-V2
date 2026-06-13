@@ -202,3 +202,16 @@ kubectl delete -f k8s/
 | `ingress.yaml` | External traffic routing via nginx ingress controller |
 
 > `k8s/secret.yaml` is in `.gitignore` — never commit real secrets to version control.
+
+---
+
+## CI/CD
+
+This project uses GitHub Actions for continuous integration. On every push or pull request to `main`/`master`, the pipeline automatically:
+
+- Installs dependencies
+- Runs all 28 integration tests against a real MongoDB Atlas test database
+
+A green checkmark on the repo means all tests passed.
+
+To view the workflow: `.github/workflows/ci.yml`

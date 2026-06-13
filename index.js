@@ -2,6 +2,7 @@ import * as dotenv from "dotenv";
 dotenv.config();
 import express from "express";
 const app = express();
+import helmet from 'helmet'
 import cors from "cors";
 import mongoose from "mongoose";
 import connectDB from "./config/db.js";
@@ -20,6 +21,8 @@ import { rootRouter } from "./routes/rootRouter.js";
 const PORT = process.env.PORT || 3002;
 
 connectDB();
+
+app.use(helmet())
 
 app.use(logger);
 

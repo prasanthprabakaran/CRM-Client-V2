@@ -1,14 +1,14 @@
-import User from "../models/User.js";
-import nodemailer from 'nodemailer';
-import crypto from 'crypto';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import sendEmail from "../utils/sendEmail.js";
+import User from "../models/User.js"
+import crypto from 'crypto'
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import sendEmail from "../utils/sendEmail.js"
+import asyncHandler from '../middleware/asyncHandler.js'
 
 // @desc Login
 // @route POST /auth
 // @access Public
-export const login = async (req, res) => {
+export const login = asyncHandler(async (req, res) => {
     const { username, password } = req.body
 
     if (!username || !password) {
@@ -21,181 +21,161 @@ export const login = async (req, res) => {
         return res.status(401).json({ message: 'Unauthorized' })
     }
 
-    const match = await foundUser.matchPassword(password);
+    const match = await foundUser.matchPassword(password)
 
     if (!match) return res.status(401).json({ message: 'Unauthorized' })
 
     const accessToken = jwt.sign(
-        {
-            "UserInfo": {
-                "username": foundUser.username,
-                "roles": foundUser.roles
-            }
-        },
+        { UserInfo: { username: foundUser.username, roles: foundUser.roles } },
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: '15m' }
     )
 
     const refreshToken = jwt.sign(
-        { "username": foundUser.username },
+        { username: foundUser.username },
         process.env.REFRESH_TOKEN_SECRET,
         { expiresIn: '7d' }
     )
 
-    // Create secure cookie with refresh token 
     res.cookie('jwt', refreshToken, {
-        httpOnly: true, //accessible only by web server 
-        secure: true, //https
-        sameSite: 'None', //cross-site cookie 
-        maxAge: 7 * 24 * 60 * 60 * 1000 //cookie expiry: set to match rT
+        httpOnly: true,
+        secure: true,
+        sameSite: 'None',
+        maxAge: 7 * 24 * 60 * 60 * 1000
     })
 
-    // Send accessToken containing username and roles 
     res.json({ accessToken })
-}
+})
+
 // @desc Refresh
 // @route GET /auth/refresh
-// @access Public - because access token has expired
+// @access Public
 export const refresh = (req, res) => {
     const cookies = req.cookies
 
-    if (!cookies?.jwt) return res.status(401).json({ message: 'Unauthorized-NoCookie' })
+    if (!cookies?.jwt) return res.status(401).json({ message: 'Unauthorized' })
 
     const refreshToken = cookies.jwt
 
     jwt.verify(
         refreshToken,
         process.env.REFRESH_TOKEN_SECRET,
-        async (err, decoded) => {
+        asyncHandler(async (err, decoded) => {
             if (err) return res.status(403).json({ message: 'Forbidden' })
 
             const foundUser = await User.findOne({ username: decoded.username }).exec()
 
-            if (!foundUser) return res.status(401).json({ message: 'Unauthorized-NoUser-Found' })
+            if (!foundUser) return res.status(401).json({ message: 'Unauthorized' })
 
             const accessToken = jwt.sign(
-                {
-                    "UserInfo": {
-                        "username": foundUser.username,
-                        "roles": foundUser.roles
-                    }
-                },
+                { UserInfo: { username: foundUser.username, roles: foundUser.roles } },
                 process.env.ACCESS_TOKEN_SECRET,
                 { expiresIn: '15m' }
             )
+
             res.json({ accessToken })
-        }
+        })
     )
 }
 
 // @desc Logout
 // @route POST /auth/logout
-// @access Public - just to clear cookie if exists
+// @access Public
 export const logout = (req, res) => {
     const cookies = req.cookies
-    if (!cookies?.jwt) return res.sendStatus(204) //No content
+    if (!cookies?.jwt) return res.sendStatus(204)
     res.clearCookie('jwt', { httpOnly: true, sameSite: 'None', secure: true })
     res.json({ message: 'Cookie cleared' })
 }
 
-export const forgetpassword = async (req,res) => {
-    
-    const {email} =req.body;
+// @desc Forgot password
+// @route POST /auth/forgetpassword
+// @access Public
+export const forgetpassword = asyncHandler(async (req, res) => {
+    const { email } = req.body
 
-    const user = await User.findOne({email: email});
+    const user = await User.findOne({ email })
 
-    if(!user) {
-        return res.status(404).send({ 
-            message: "No email could be send",
-            success: false,
-        });
-    }
-
-    let resetToken = await user.getResetPasswordToken();
-
-    await user.save();
-
-    const resetUrl = `${process.env.ORIGIN}/resetpassword/${resetToken}`;
-
-    const message = `
-    <h1>You have requested a password reset</h1>
-    <p>You're almost there!</p><br><p>Click the link below to verify your email</p>
-    <a href=${resetUrl} clicktracking=off> Verify your email</a>
-    `;
-    try{
-        await sendEmail({
-            to: user.email,
-            subject: "Password Reset Request",
-            text: message,
-        });
-        res.status(200).json({ success: true, data: "Email Sent"});
-    } catch (error) {
-        console.log(error);
-
-        user.resetPasswordToken = undefined;
-        user.resetPasswordExpire = undefined;
-
-        await user.save();
-
-        return res.status(500).send({
-            message: "Email could not be sent",
+    if (!user) {
+        return res.status(404).json({
+            message: 'No account with that email found',
             success: false
         })
     }
-    
-}
 
-export const resetpassword = async (req,res) => {
-    // const { password, confirmPassword } =req.body
+    const resetToken = await user.getResetPasswordToken()
 
-    // if (password !== confirmPassword) {
-    //     return res.status(400).send({
-    //         message: 'Password and Confirm Password should be exactly the same',
-    //         success: false,
-    //     })
-    // }
-    
+    await user.save()
+
+    const resetUrl = `${process.env.ORIGIN}/resetpassword/${resetToken}`
+
+    const message = `
+        <h1>You have requested a password reset</h1>
+        <p>You're almost there!</p>
+        <p>Click the link below to reset your password:</p>
+        <a href=${resetUrl} clicktracking=off>Reset your password</a>
+    `
+
+    try {
+        await sendEmail({
+            to: user.email,
+            subject: 'Password Reset Request',
+            text: message
+        })
+
+        res.status(200).json({ success: true, data: 'Email Sent' })
+    } catch (error) {
+        user.resetPasswordToken = undefined
+        user.resetPasswordExpire = undefined
+        await user.save()
+
+        res.status(500).json({
+            message: 'Email could not be sent',
+            success: false
+        })
+    }
+})
+
+// @desc Reset password
+// @route PUT /auth/resetpassword/:resetToken
+// @access Public
+export const resetpassword = asyncHandler(async (req, res) => {
     const resetPasswordToken = crypto
-    .createHash("sha256")
-    .update(req.params.resetToken)
-    .digest("hex");
+        .createHash('sha256')
+        .update(req.params.resetToken)
+        .digest('hex')
 
     const user = await User.findOne({
         resetPasswordToken,
-        resetPasswordExpire: {$gt: Date.now()},
-    });
+        resetPasswordExpire: { $gt: Date.now() }
+    })
 
     if (!user) {
-        return res.status(400).send({
-            message: "Invalid Token",
-            success: false,
+        return res.status(400).json({
+            message: 'Invalid or expired token',
+            success: false
         })
     }
 
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(req.body.password, salt);
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpire = undefined;
+    const salt = await bcrypt.genSalt(10)
+    user.password = await bcrypt.hash(req.body.password, salt)
+    user.resetPasswordToken = undefined
+    user.resetPasswordExpire = undefined
 
-    await user.save(); 
+    await user.save()
 
     const accessToken = jwt.sign(
-        {
-            "UserInfo": {
-                "username": user.username,
-                "roles": user.roles
-            }
-        },
+        { UserInfo: { username: user.username, roles: user.roles } },
         process.env.ACCESS_TOKEN_SECRET,
         { expiresIn: '15m' }
     )
-    res.json({ 
+
+    res.json({
         accessToken,
         success: true,
-        data: "Password Updated Successfully"
+        data: 'Password Updated Successfully'
     })
-
-}
+})
 
 const authController = { login, refresh, logout, forgetpassword, resetpassword }
 

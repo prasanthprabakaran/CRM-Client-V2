@@ -1,23 +1,18 @@
-import express from "express";
-const router = express.Router();
-import {getAllUsers,createNewUser,updateUser,deleteUser} from "../controllers/userController.js";
-import verifyJWT from '../middleware/verifyJWT.js';
+import express from "express"
+const router = express.Router()
+import { getAllUsers, createNewUser, updateUser, deleteUser } from "../controllers/userController.js"
+import verifyJWT from '../middleware/verifyJWT.js'
+import validate from "../middleware/validate.js"
+import { createUserSchema, updateUserSchema } from "../validators/userSchemas.js"
 
 router.use(verifyJWT)
 
-router
-  .route("/")
-  .get(getAllUsers)
-  .post(createNewUser)
-  .patch(updateUser)
-  .delete(deleteUser);
+router.route('/')
+    .get(getAllUsers)
+    .post(validate(createUserSchema), createNewUser)
 
-// router.route('/register').post(register);
+router.route('/:id')
+    .patch(validate(updateUserSchema), updateUser)
+    .delete(deleteUser)
 
-// router.route('/login').post(login);
-
-// router.route('/forgetpassword').post(forgetpassword);
-
-// router.route('/resetpassword/:resetToken').put(resetpassword);
-
-export const userRouter = router;
+export const userRouter = router
